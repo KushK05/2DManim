@@ -13,14 +13,14 @@ router.post('/checkout', auth, async (req, res) => {
   try {
     const { plan } = req.body;
 
-    if (!['free', 'pro', 'enterprise'].includes(plan)) {
+    if (!['free', 'pro', 'unlimited'].includes(plan)) {
       return res.status(400).json({ error: 'Invalid plan' });
     }
 
     await activatePlanForUser(req.user, plan);
 
     res.json({
-      url: `${env.clientUrl}/billing?success=true&local=1`,
+      url: `${env.clientUrl}/pricing?success=true&local=1`,
       local: true,
       plan: req.user.plan,
     });
@@ -31,7 +31,7 @@ router.post('/checkout', auth, async (req, res) => {
 
 router.post('/portal', auth, async (req, res) => {
   res.json({
-    url: `${env.clientUrl}/billing?local=1`,
+    url: `${env.clientUrl}/pricing?local=1`,
     local: true,
     message: 'Payment portal is disabled in local prototype mode',
   });
