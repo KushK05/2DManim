@@ -24,7 +24,7 @@ export const PLANS = {
     collaborationTools: false,
     popular: true,
   },
-  enterprise: {
+  unlimited: {
     name: 'Enterprise',
     credits: 1000000,
     price: 99,
