@@ -1,7 +1,15 @@
 :root {
   color-scheme: dark;
-  font-family: "Space Grotesk", sans-serif;
-  background: #07111a;
+  font-family: "Space Grotesk", "IBM Plex Mono", sans-serif;
+  --bg: #06080c;
+  --panel: #0e1117;
+  --panel-soft: #121722;
+  --text: #f4f4f5;
+  --muted: #8d99ae;
+  --line: rgba(255, 255, 255, 0.08);
+  --button: #f8fafc;
+  --button-text: #0a0a0a;
+  background: var(--bg);
 }
 
 * {
@@ -15,24 +23,12 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
+  font-family: "Space Grotesk", "IBM Plex Mono", sans-serif;
   background:
-    radial-gradient(circle at 12% 12%, rgba(255, 138, 61, 0.18), transparent 0 28%),
-    radial-gradient(circle at 88% 14%, rgba(107, 231, 200, 0.12), transparent 0 24%),
-    linear-gradient(180deg, #07111a 0%, #091722 48%, #07111a 100%);
-  color: #f8f3ee;
-}
-
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0.35;
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
-  background-size: 72px 72px;
-  mask-image: radial-gradient(circle at center, black, transparent 78%);
+    radial-gradient(circle at 10% 0%, rgba(255, 255, 255, 0.09), transparent 25%),
+    radial-gradient(circle at 90% 5%, rgba(255, 255, 255, 0.07), transparent 25%),
+    linear-gradient(180deg, #04070b 0%, #06080c 60%, #090d14 100%);
+  color: var(--text);
 }
 
 #root {
@@ -44,8 +40,8 @@ a {
 }
 
 ::selection {
-  background: rgba(255, 138, 61, 0.3);
-  color: #fff8f2;
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
 }
 
 @keyframes fadeUp {

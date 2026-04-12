@@ -26,60 +26,67 @@ export default function Navbar() {
       position="sticky"
       sx={{
         top: 0,
-        background: 'rgba(7, 17, 26, 0.72)',
-        backdropFilter: 'blur(18px)',
+        background: 'rgba(6, 8, 12, 0.86)',
+        backdropFilter: 'blur(8px)',
         boxShadow: 'none',
         borderBottom: '1px solid rgba(255,255,255,0.08)',
       }}
     >
       <Container maxWidth="xl">
-        <Toolbar disableGutters sx={{ minHeight: 84, py: 1.5, gap: 2, flexWrap: 'wrap' }}>
+        <Toolbar disableGutters sx={{ minHeight: 66, py: 1, gap: 2, flexWrap: 'wrap' }}>
           <Box
             onClick={() => navigate('/studio')}
             sx={{
               display: 'flex',
               alignItems: 'center',
-              gap: 1.5,
+              gap: 1,
               cursor: 'pointer',
               minWidth: 0,
             }}
           >
             <Box
               sx={{
-                width: 44,
-                height: 44,
-                borderRadius: '16px',
-                display: 'grid',
-                placeItems: 'center',
-                fontWeight: 700,
-                color: 'primary.main',
-                background: 'linear-gradient(135deg, rgba(255, 138, 61, 0.18), rgba(107, 231, 200, 0.1))',
-                border: '1px solid rgba(255,255,255,0.08)',
+                width: 17,
+                height: 17,
+                borderRadius: 999,
+                background: 'linear-gradient(135deg, #f8fafc, #8ea0b8)',
               }}
-            >
-              2D
-            </Box>
+            />
             <Box>
-              <Typography variant="subtitle1" sx={{ lineHeight: 1.1 }}>
+              <Typography
+                variant="subtitle1"
+                sx={{
+                  lineHeight: 1.1,
+                  fontWeight: 700,
+                  letterSpacing: '-0.02em',
+                  fontFamily: '"Space Grotesk", "IBM Plex Mono", sans-serif',
+                }}
+              >
                 2DManim
               </Typography>
-              <Typography variant="caption" color="text.secondary">
+              <Typography variant="caption" color="text.secondary" sx={{ textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                 Animation studio
               </Typography>
             </Box>
           </Box>
 
-          <Box sx={{ flexGrow: 1, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+          <Box sx={{ flexGrow: 1, display: 'flex', gap: 0.5, flexWrap: 'wrap', ml: 1 }}>
             {navItems.map((item) => {
               const active = location.pathname === item.path;
               return (
                 <Button
                   key={item.path}
                   onClick={() => navigate(item.path)}
-                  variant={active ? 'contained' : 'text'}
                   sx={{
-                    color: active ? 'common.white' : 'text.secondary',
-                    bgcolor: active ? undefined : 'transparent',
+                    color: active ? 'text.primary' : 'text.secondary',
+                    bgcolor: 'transparent',
+                    minHeight: 30,
+                    px: 1.25,
+                    borderRadius: 1.5,
+                    border: active ? '1px solid rgba(255,255,255,0.12)' : '1px solid transparent',
+                    '&:hover': {
+                      borderColor: 'rgba(255,255,255,0.12)',
+                    },
                   }}
                 >
                   {item.label}
@@ -101,15 +108,15 @@ export default function Navbar() {
             <Chip
               label={`${(user?.plan || 'free').toUpperCase()} plan`}
               sx={{
-                bgcolor: 'rgba(107, 231, 200, 0.12)',
-                color: 'secondary.light',
-                border: '1px solid rgba(107, 231, 200, 0.22)',
+                bgcolor: 'rgba(255,255,255,0.05)',
+                color: 'text.primary',
+                border: '1px solid rgba(255,255,255,0.08)',
               }}
             />
             {user?.name && (
               <Chip
                 label={user.name}
-                sx={{ display: { xs: 'none', md: 'inline-flex' }, bgcolor: 'rgba(255,255,255,0.06)' }}
+                sx={{ display: { xs: 'none', md: 'inline-flex' }, bgcolor: 'rgba(255,255,255,0.03)' }}
               />
             )}
             <Button

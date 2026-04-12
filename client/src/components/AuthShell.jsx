@@ -46,7 +46,7 @@ export default function AuthShell({ eyebrow, title, subtitle, footer, children }
             label="2DManim Studio"
             sx={{
               mb: 2,
-              bgcolor: 'rgba(255,255,255,0.08)',
+              bgcolor: 'rgba(255,255,255,0.03)',
               color: 'text.primary',
               border: '1px solid rgba(255,255,255,0.08)',
             }}
@@ -70,7 +70,7 @@ export default function AuthShell({ eyebrow, title, subtitle, footer, children }
                 sx={{
                   flex: 1,
                   p: 2.25,
-                  background: 'linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03))',
+                  background: 'linear-gradient(180deg, rgba(17, 22, 32, 0.96), rgba(10, 13, 19, 0.96))',
                 }}
               >
                 <Typography variant="overline" color="text.secondary">
@@ -92,7 +92,7 @@ export default function AuthShell({ eyebrow, title, subtitle, footer, children }
                   p: 2,
                   borderRadius: 4,
                   border: '1px solid rgba(255,255,255,0.08)',
-                  background: 'rgba(7, 17, 26, 0.52)',
+                  background: 'rgba(14, 17, 23, 0.8)',
                   backdropFilter: 'blur(10px)',
                 }}
               >
@@ -103,9 +103,9 @@ export default function AuthShell({ eyebrow, title, subtitle, footer, children }
                     borderRadius: '14px',
                     display: 'grid',
                     placeItems: 'center',
-                    color: 'primary.main',
-                    bgcolor: 'rgba(255, 138, 61, 0.12)',
-                    border: '1px solid rgba(255, 138, 61, 0.24)',
+                    color: 'text.primary',
+                    bgcolor: 'rgba(255, 255, 255, 0.06)',
+                    border: '1px solid rgba(255, 255, 255, 0.12)',
                   }}
                 >
                   {item.icon}
@@ -128,9 +128,9 @@ export default function AuthShell({ eyebrow, title, subtitle, footer, children }
             label={eyebrow}
             sx={{
               mb: 2,
-              bgcolor: 'rgba(107, 231, 200, 0.12)',
-              color: 'secondary.light',
-              border: '1px solid rgba(107, 231, 200, 0.22)',
+              bgcolor: 'rgba(255,255,255,0.05)',
+              color: 'text.primary',
+              border: '1px solid rgba(255,255,255,0.1)',
             }}
           />
           <Typography variant="h3" sx={{ mb: 1 }}>

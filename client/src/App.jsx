@@ -24,10 +24,10 @@ function LoadingScreen() {
           width: '100%',
           maxWidth: 420,
           p: 4,
-          borderRadius: 6,
+          borderRadius: 2.5,
           border: '1px solid rgba(255,255,255,0.08)',
-          background: 'linear-gradient(180deg, rgba(16, 32, 45, 0.9), rgba(11, 23, 33, 0.94))',
-          boxShadow: '0 24px 60px rgba(0,0,0,0.28)',
+          background: 'linear-gradient(180deg, rgba(17, 22, 32, 0.95), rgba(10, 13, 19, 0.95))',
+          boxShadow: 'none',
           textAlign: 'center',
         }}
       >
@@ -39,9 +39,9 @@ function LoadingScreen() {
               borderRadius: '20px',
               display: 'grid',
               placeItems: 'center',
-              bgcolor: 'rgba(255, 138, 61, 0.12)',
-              color: 'primary.main',
-              border: '1px solid rgba(255, 138, 61, 0.22)',
+              bgcolor: 'rgba(255, 255, 255, 0.08)',
+              color: 'text.primary',
+              border: '1px solid rgba(255, 255, 255, 0.12)',
             }}
           >
             <CircularProgress size={28} thickness={4} />
@@ -86,7 +86,7 @@ export default function App() {
             inset: 0,
             pointerEvents: 'none',
             background:
-              'radial-gradient(circle at 18% 0%, rgba(255, 138, 61, 0.12), transparent 28%), radial-gradient(circle at 86% 12%, rgba(107, 231, 200, 0.1), transparent 22%)',
+              'radial-gradient(circle at 10% 0%, rgba(255, 255, 255, 0.09), transparent 24%), radial-gradient(circle at 90% 6%, rgba(255, 255, 255, 0.07), transparent 24%)',
           }}
         />
       )}

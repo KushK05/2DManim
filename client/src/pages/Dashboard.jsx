@@ -114,9 +114,9 @@ export default function Dashboard() {
               label="Creative studio"
               sx={{
                 mb: 2,
-                bgcolor: 'rgba(255, 138, 61, 0.12)',
-                color: 'primary.light',
-                border: '1px solid rgba(255, 138, 61, 0.22)',
+                bgcolor: 'rgba(255,255,255,0.05)',
+                color: 'text.primary',
+                border: '1px solid rgba(255,255,255,0.1)',
               }}
             />
             <Typography variant="h2" sx={{ maxWidth: 760, mb: 1.5 }}>

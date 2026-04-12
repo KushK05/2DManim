@@ -1,54 +1,57 @@
 import { createTheme } from '@mui/material/styles';
 
+const line = 'rgba(255,255,255,0.08)';
+
 const theme = createTheme({
   palette: {
     mode: 'dark',
     primary: {
-      main: '#ff8a3d',
-      light: '#ffb070',
-      dark: '#db6720',
+      main: '#f8fafc',
+      light: '#ffffff',
+      dark: '#dbe2ea',
     },
     secondary: {
-      main: '#6be7c8',
-      light: '#a1f3de',
-      dark: '#2bb796',
+      main: '#8ea0b8',
+      light: '#b5bfd2',
+      dark: '#6f7c93',
     },
     info: {
-      main: '#68b7ff',
+      main: '#b5bfd2',
     },
     background: {
-      default: '#07111a',
-      paper: '#10202d',
+      default: '#06080c',
+      paper: '#0e1117',
     },
     text: {
-      primary: '#f8f3ee',
-      secondary: 'rgba(248, 243, 238, 0.72)',
+      primary: '#f4f4f5',
+      secondary: '#8d99ae',
     },
+    divider: line,
   },
   typography: {
-    fontFamily: '"Space Grotesk", "Avenir Next", "Segoe UI", sans-serif',
+    fontFamily: '"Space Grotesk", "IBM Plex Mono", sans-serif',
     h1: {
-      fontSize: 'clamp(3rem, 5vw, 4.8rem)',
-      lineHeight: 0.98,
+      fontSize: 'clamp(2rem, 5vw, 4rem)',
+      lineHeight: 0.9,
       fontWeight: 700,
       letterSpacing: '-0.04em',
     },
     h2: {
-      fontSize: 'clamp(2.3rem, 4vw, 3.6rem)',
-      lineHeight: 1,
+      fontSize: 'clamp(1.5rem, 3vw, 2.4rem)',
+      lineHeight: 0.95,
       fontWeight: 700,
-      letterSpacing: '-0.04em',
+      letterSpacing: '-0.03em',
     },
     h3: {
-      fontSize: 'clamp(1.8rem, 3vw, 2.6rem)',
+      fontSize: 'clamp(1.1rem, 2.2vw, 1.6rem)',
       lineHeight: 1.05,
       fontWeight: 700,
-      letterSpacing: '-0.035em',
+      letterSpacing: '-0.02em',
     },
     h4: {
-      fontSize: 'clamp(1.6rem, 2.5vw, 2.1rem)',
+      fontSize: 'clamp(1rem, 2vw, 1.2rem)',
       fontWeight: 700,
-      letterSpacing: '-0.025em',
+      letterSpacing: '-0.02em',
     },
     h5: {
       fontWeight: 700,
@@ -59,22 +62,27 @@ const theme = createTheme({
       letterSpacing: '-0.02em',
     },
     button: {
-      fontWeight: 700,
-      letterSpacing: '-0.01em',
+      fontWeight: 600,
+      letterSpacing: '0.04em',
+      textTransform: 'uppercase',
+      fontSize: '0.68rem',
     },
     overline: {
-      fontWeight: 700,
+      fontWeight: 600,
       letterSpacing: '0.08em',
+      fontSize: '0.62rem',
     },
   },
   shape: {
-    borderRadius: 24,
+    borderRadius: 10,
   },
   components: {
     MuiCssBaseline: {
       styleOverrides: {
         body: {
-          backgroundColor: '#07111a',
+          background:
+            'radial-gradient(circle at 10% 0%, rgba(255, 255, 255, 0.09), transparent 25%), radial-gradient(circle at 90% 5%, rgba(255, 255, 255, 0.07), transparent 25%), linear-gradient(180deg, #04070b 0%, #06080c 60%, #090d14 100%)',
+          color: '#f4f4f5',
         },
       },
     },
@@ -86,19 +94,37 @@ const theme = createTheme({
     MuiButton: {
       styleOverrides: {
         root: {
-          textTransform: 'none',
-          fontWeight: 700,
-          borderRadius: 999,
-          paddingInline: 20,
-          minHeight: 46,
+          textTransform: 'uppercase',
+          fontWeight: 600,
+          borderRadius: 9,
+          paddingInline: 14,
+          minHeight: 38,
         },
         contained: {
-          background: 'linear-gradient(135deg, #ff8a3d 0%, #ff6b3d 100%)',
-          boxShadow: '0 14px 30px rgba(255, 107, 61, 0.28)',
+          border: '1px solid #e5e7eb',
+          background: '#f8fafc',
+          color: '#0a0a0a',
+          boxShadow: 'none',
+          '&:hover': {
+            background: '#ffffff',
+            boxShadow: 'none',
+          },
         },
         outlined: {
-          borderColor: 'rgba(255,255,255,0.12)',
+          borderColor: line,
           backgroundColor: 'rgba(255,255,255,0.02)',
+          color: '#f4f4f5',
+          '&:hover': {
+            borderColor: line,
+            backgroundColor: 'rgba(255,255,255,0.08)',
+          },
+        },
+        text: {
+          color: '#b5bfd2',
+          '&:hover': {
+            backgroundColor: 'rgba(255,255,255,0.06)',
+            color: '#f8fafc',
+          },
         },
       },
     },
@@ -107,6 +133,9 @@ const theme = createTheme({
         root: {
           borderRadius: 999,
           fontWeight: 600,
+          border: `1px solid ${line}`,
+          backgroundColor: 'rgba(255,255,255,0.03)',
+          color: '#dbe2ea',
         },
       },
     },
@@ -114,10 +143,10 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           backgroundImage: 'none',
-          background: 'linear-gradient(180deg, rgba(16, 32, 45, 0.9), rgba(11, 23, 33, 0.92))',
-          border: '1px solid rgba(255,255,255,0.08)',
-          boxShadow: '0 24px 60px rgba(0, 0, 0, 0.28)',
-          backdropFilter: 'blur(18px)',
+          background: 'linear-gradient(180deg, rgba(17, 22, 32, 0.95), rgba(10, 13, 19, 0.95))',
+          border: `1px solid ${line}`,
+          boxShadow: 'none',
+          borderRadius: 10,
         },
       },
     },
@@ -125,6 +154,8 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           backgroundImage: 'none',
+          border: `1px solid ${line}`,
+          backgroundColor: '#0e1117',
         },
       },
     },
@@ -132,13 +163,15 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           backgroundImage: 'none',
+          backgroundColor: 'rgba(6, 8, 12, 0.86)',
+          borderBottom: `1px solid ${line}`,
         },
       },
     },
     MuiOutlinedInput: {
       styleOverrides: {
         root: {
-          borderRadius: 22,
+          borderRadius: 10,
           background: 'rgba(255,255,255,0.03)',
           transition: 'background 160ms ease, transform 160ms ease',
           '&:hover': {
@@ -149,26 +182,26 @@ const theme = createTheme({
           },
         },
         notchedOutline: {
-          borderColor: 'rgba(255,255,255,0.1)',
+          borderColor: line,
         },
         input: {
-          paddingTop: 16,
-          paddingBottom: 16,
+          paddingTop: 14,
+          paddingBottom: 14,
         },
       },
     },
     MuiInputLabel: {
       styleOverrides: {
         root: {
-          color: 'rgba(248, 243, 238, 0.72)',
+          color: '#8d99ae',
         },
       },
     },
     MuiDialog: {
       styleOverrides: {
         paper: {
-          background: 'linear-gradient(180deg, rgba(16, 32, 45, 0.98), rgba(11, 23, 33, 0.98))',
-          border: '1px solid rgba(255,255,255,0.08)',
+          background: 'linear-gradient(180deg, rgba(17, 22, 32, 0.98), rgba(10, 13, 19, 0.98))',
+          border: `1px solid ${line}`,
           backdropFilter: 'blur(20px)',
         },
       },

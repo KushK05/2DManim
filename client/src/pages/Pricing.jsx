@@ -9,7 +9,6 @@ import {
   IconButton,
 } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
-import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -173,7 +172,7 @@ export default function Pricing() {
           inset: 0,
           pointerEvents: 'none',
           background:
-            'radial-gradient(circle at 18% 0%, rgba(255, 138, 61, 0.12), transparent 28%), radial-gradient(circle at 86% 12%, rgba(107, 231, 200, 0.1), transparent 22%)',
+            'radial-gradient(circle at 10% 0%, rgba(255, 255, 255, 0.09), transparent 24%), radial-gradient(circle at 90% 6%, rgba(255, 255, 255, 0.07), transparent 24%)',
         }}
       />
 
@@ -184,8 +183,8 @@ export default function Pricing() {
           position: 'sticky',
           top: 0,
           zIndex: 100,
-          background: 'rgba(7, 17, 26, 0.72)',
-          backdropFilter: 'blur(18px)',
+          background: 'rgba(6, 8, 12, 0.86)',
+          backdropFilter: 'blur(8px)',
           borderBottom: '1px solid rgba(255,255,255,0.08)',
         }}
       >
@@ -195,31 +194,30 @@ export default function Pricing() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              py: 1.5,
-              minHeight: 64,
+              py: 1,
+              minHeight: 66,
             }}
           >
             <Box
               onClick={() => navigate('/')}
-              sx={{ display: 'flex', alignItems: 'center', gap: 1.5, cursor: 'pointer' }}
+              sx={{ display: 'flex', alignItems: 'center', gap: 1, cursor: 'pointer' }}
             >
               <Box
                 sx={{
-                  width: 36,
-                  height: 36,
-                  borderRadius: '12px',
-                  display: 'grid',
-                  placeItems: 'center',
+                  width: 17,
+                  height: 17,
+                  borderRadius: 999,
+                  background: 'linear-gradient(135deg, #f8fafc, #8ea0b8)',
+                }}
+              />
+              <Typography
+                variant="subtitle1"
+                sx={{
                   fontWeight: 700,
-                  fontSize: 14,
-                  color: 'primary.main',
-                  background: 'linear-gradient(135deg, rgba(255, 138, 61, 0.18), rgba(107, 231, 200, 0.1))',
-                  border: '1px solid rgba(255,255,255,0.08)',
+                  letterSpacing: '-0.02em',
+                  fontFamily: '"Space Grotesk", "IBM Plex Mono", sans-serif',
                 }}
               >
-                2D
-              </Box>
-              <Typography variant="subtitle1" fontWeight={700}>
                 2DManim
               </Typography>
             </Box>
@@ -230,9 +228,12 @@ export default function Pricing() {
                   variant="body2"
                   sx={{
                     cursor: 'pointer',
-                    color: item === 'Pricing' ? '#fff' : 'text.secondary',
+                    color: item === 'Pricing' ? 'text.primary' : 'text.secondary',
                     fontWeight: item === 'Pricing' ? 600 : 400,
-                    '&:hover': { color: '#fff' },
+                    fontSize: '0.64rem',
+                    letterSpacing: '0.08em',
+                    textTransform: 'uppercase',
+                    '&:hover': { color: 'text.primary' },
                     transition: 'color 200ms',
                   }}
                 >
@@ -273,7 +274,7 @@ export default function Pricing() {
               variant="body1"
               className="fade-in"
               sx={{
-                color: 'rgba(148, 163, 184, 1)',
+                color: 'text.secondary',
                 maxWidth: 520,
                 mx: 'auto',
                 fontSize: { xs: '0.95rem', md: '1.05rem' },
@@ -307,14 +308,13 @@ export default function Pricing() {
                     px: 3,
                     py: 1,
                     minHeight: 40,
-                    textTransform: 'capitalize',
                     fontWeight: 600,
-                    fontSize: '0.875rem',
-                    color: billing === period ? '#0a0a0a' : 'rgba(148, 163, 184, 1)',
-                    bgcolor: billing === period ? '#fff' : 'transparent',
+                    fontSize: '0.68rem',
+                    color: billing === period ? '#0a0a0a' : '#8d99ae',
+                    bgcolor: billing === period ? '#f8fafc' : 'transparent',
                     boxShadow: billing === period ? '0 2px 8px rgba(0,0,0,0.3)' : 'none',
                     '&:hover': {
-                      bgcolor: billing === period ? '#fff' : 'rgba(255,255,255,0.06)',
+                      bgcolor: billing === period ? '#ffffff' : 'rgba(255,255,255,0.06)',
                     },
                   }}
                 >
@@ -373,7 +373,6 @@ export default function Pricing() {
             }}
           >
             {plans.map((plan) => {
-              const isLight = plan.variant === 'light';
               const price = billing === 'yearly' ? plan.yearlyPrice : plan.price;
               const isCurrentPlan = user?.plan === plan.key;
               return (
@@ -385,9 +384,9 @@ export default function Pricing() {
                     p: { xs: 3, md: 4 },
                     display: 'flex',
                     flexDirection: 'column',
-                    bgcolor: isLight ? '#fff' : 'rgba(16, 32, 45, 0.6)',
-                    border: isLight ? 'none' : '1px solid rgba(255,255,255,0.08)',
-                    color: isLight ? '#0a0a0a' : '#f1f5f9',
+                    bgcolor: plan.popular ? 'rgba(18, 23, 34, 0.98)' : 'rgba(14, 17, 23, 0.9)',
+                    border: '1px solid rgba(255,255,255,0.08)',
+                    color: '#f4f4f5',
                     order: plan.popular ? { xs: 0, md: 0 } : undefined,
                     transform: plan.popular ? { md: 'scale(1.04)' } : undefined,
                     zIndex: plan.popular ? 2 : 1,
@@ -403,8 +402,8 @@ export default function Pricing() {
                         top: -14,
                         left: '50%',
                         transform: 'translateX(-50%)',
-                        bgcolor: '#0a0a0a',
-                        color: '#fff',
+                        bgcolor: '#f8fafc',
+                        color: '#0a0a0a',
                         borderRadius: 999,
                         px: 2.5,
                         py: 0.75,
@@ -423,7 +422,7 @@ export default function Pricing() {
                     variant="body1"
                     sx={{
                       fontWeight: 500,
-                      color: isLight ? 'rgba(100, 116, 139, 1)' : 'rgba(148, 163, 184, 1)',
+                      color: 'text.secondary',
                       mb: 1.5,
                     }}
                   >
@@ -443,7 +442,7 @@ export default function Pricing() {
                     <Typography
                       variant="body2"
                       sx={{
-                        color: isLight ? 'rgba(100, 116, 139, 1)' : 'rgba(148, 163, 184, 1)',
+                        color: 'text.secondary',
                       }}
                     >
                       /mo
@@ -452,7 +451,7 @@ export default function Pricing() {
                   <Typography
                     variant="body2"
                     sx={{
-                      color: isLight ? 'rgba(100, 116, 139, 1)' : 'rgba(148, 163, 184, 1)',
+                      color: 'text.secondary',
                       mb: 3,
                       lineHeight: 1.5,
                     }}
@@ -467,17 +466,13 @@ export default function Pricing() {
                         <CheckIcon
                           sx={{
                             fontSize: 18,
-                            color: isLight
-                              ? (plan.featureDimmed[i] ? 'rgba(100,116,139,0.5)' : '#0a0a0a')
-                              : (plan.featureDimmed[i] ? 'rgba(100,116,139,1)' : '#6be7c8'),
+                            color: plan.featureDimmed[i] ? 'rgba(141, 153, 174, 0.5)' : '#f4f4f5',
                           }}
                         />
                         <Typography
                           variant="body2"
                           sx={{
-                            color: isLight
-                              ? (plan.featureDimmed[i] ? 'rgba(100,116,139,0.7)' : '#0a0a0a')
-                              : (plan.featureDimmed[i] ? 'rgba(100,116,139,1)' : '#f1f5f9'),
+                            color: plan.featureDimmed[i] ? '#8d99ae' : '#f4f4f5',
                           }}
                         >
                           {feature}
@@ -489,26 +484,14 @@ export default function Pricing() {
                   {/* CTA */}
                   <Button
                     fullWidth
+                    variant={plan.popular ? 'contained' : 'outlined'}
                     disabled={isCurrentPlan || loading === plan.key}
                     onClick={() => handleCheckout(plan.key)}
                     sx={{
                       borderRadius: 2,
                       py: 1.5,
                       fontWeight: 600,
-                      fontSize: '0.9rem',
-                      textTransform: 'none',
-                      ...(isLight
-                        ? {
-                            bgcolor: '#0a0a0a',
-                            color: '#fff',
-                            '&:hover': { bgcolor: '#1a1a1a' },
-                          }
-                        : {
-                            bgcolor: 'rgba(255,255,255,0.08)',
-                            color: '#fff',
-                            border: '1px solid rgba(255,255,255,0.12)',
-                            '&:hover': { bgcolor: 'rgba(255,255,255,0.12)' },
-                          }),
+                      fontSize: '0.68rem',
                     }}
                   >
                     {isCurrentPlan
@@ -582,9 +565,9 @@ export default function Pricing() {
                     <Box key={planKey} sx={{ textAlign: 'center' }}>
                       {typeof row[planKey] === 'boolean' ? (
                         row[planKey] ? (
-                          <CheckIcon sx={{ fontSize: 18, color: '#6be7c8' }} />
+                          <CheckIcon sx={{ fontSize: 18, color: '#f4f4f5' }} />
                         ) : (
-                          <Typography variant="body2" sx={{ color: 'rgba(100,116,139,1)' }}>
+                          <Typography variant="body2" sx={{ color: '#8d99ae' }}>
                             &mdash;
                           </Typography>
                         )
@@ -595,8 +578,8 @@ export default function Pricing() {
                             fontWeight: planKey === 'free' ? 400 : 600,
                             color:
                               planKey === 'free'
-                                ? 'rgba(148, 163, 184, 1)'
-                                : '#fff',
+                                ? '#8d99ae'
+                                : '#f4f4f5',
                           }}
                         >
                           {row[planKey]}
@@ -640,7 +623,7 @@ export default function Pricing() {
                     <Typography variant="body1" sx={{ fontWeight: 500 }}>
                       {faq.q}
                     </Typography>
-                    <IconButton size="small" sx={{ color: '#fff', ml: 2, flexShrink: 0 }}>
+                    <IconButton size="small" sx={{ color: 'text.primary', ml: 2, flexShrink: 0 }}>
                       <AddIcon
                         sx={{
                           transition: 'transform 200ms',
@@ -653,7 +636,7 @@ export default function Pricing() {
                     <Typography
                       variant="body2"
                       sx={{
-                        color: 'rgba(148, 163, 184, 1)',
+                        color: 'text.secondary',
                         pb: 2.5,
                         lineHeight: 1.6,
                       }}
@@ -683,7 +666,7 @@ export default function Pricing() {
             </Typography>
             <Typography
               variant="body1"
-              sx={{ color: 'rgba(148, 163, 184, 1)', mb: 4, maxWidth: 500, mx: 'auto' }}
+              sx={{ color: 'text.secondary', mb: 4, maxWidth: 500, mx: 'auto' }}
             >
               Join 10,000+ creators and educators making beautiful math visuals today.
             </Typography>
@@ -701,7 +684,7 @@ export default function Pricing() {
                   px: 4,
                   py: 1.5,
                   borderColor: 'rgba(255,255,255,0.2)',
-                  color: '#fff',
+                  color: 'text.primary',
                   '&:hover': { borderColor: 'rgba(255,255,255,0.4)', bgcolor: 'rgba(255,255,255,0.04)' },
                 }}
               >
@@ -732,20 +715,12 @@ export default function Pricing() {
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                 <Box
                   sx={{
-                    width: 28,
-                    height: 28,
-                    borderRadius: '8px',
-                    display: 'grid',
-                    placeItems: 'center',
-                    fontWeight: 700,
-                    fontSize: 11,
-                    color: 'primary.main',
-                    background: 'linear-gradient(135deg, rgba(255, 138, 61, 0.18), rgba(107, 231, 200, 0.1))',
-                    border: '1px solid rgba(255,255,255,0.08)',
+                    width: 15,
+                    height: 15,
+                    borderRadius: 999,
+                    background: 'linear-gradient(135deg, #f8fafc, #8ea0b8)',
                   }}
-                >
-                  2D
-                </Box>
+                />
                 <Typography variant="body2" fontWeight={600}>
                   2DManim
                 </Typography>
@@ -755,13 +730,13 @@ export default function Pricing() {
                   <Typography
                     key={link}
                     variant="caption"
-                    sx={{ color: 'rgba(100, 116, 139, 1)', cursor: 'pointer', '&:hover': { color: '#fff' } }}
+                    sx={{ color: 'text.secondary', cursor: 'pointer', '&:hover': { color: 'text.primary' } }}
                   >
                     {link}
                   </Typography>
                 ))}
               </Box>
-              <Typography variant="caption" sx={{ color: 'rgba(100, 116, 139, 1)' }}>
+              <Typography variant="caption" sx={{ color: 'text.secondary' }}>
                 &copy; 2024 2DManim Inc. All rights reserved.
               </Typography>
             </Box>
