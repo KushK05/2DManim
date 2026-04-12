@@ -1,9 +1,10 @@
 import { FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 
 const FALLBACK_MODELS = [
-  { key: 'claude-3.5-sonnet', name: 'Claude 3.5 Sonnet' },
-  { key: 'gpt-4o', name: 'GPT-4o' },
-  { key: 'gemini-pro', name: 'Gemini Pro' },
+  { key: 'mistral-medium-latest', name: 'Mistral Medium Latest' },
+  { key: 'mistral-small-latest', name: 'Mistral Small Latest' },
+  { key: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash' },
+  { key: 'gemini-2.5-flash-lite', name: 'Gemini 2.5 Flash-Lite' },
 ];
 
 export default function ModelSelector({ value, onChange, models = [] }) {

@@ -1,15 +1,26 @@
 import { Router } from 'express';
 import auth from '../middleware/auth.js';
 import { generateLimiter } from '../middleware/rateLimit.js';
-import { generateManimCode } from '../services/gemini.js';
+import { generateManimCode, repairManimCode } from '../services/gemini.js';
 import { renderManim } from '../services/manim.js';
 import Generation from '../models/Generation.js';
 import env from '../config/env.js';
 
 const router = Router();
 
+function isSyntaxLikeRenderError(message) {
+  const text = String(message || '').toLowerCase();
+  return (
+    text.includes('syntaxerror')
+    || text.includes('was never closed')
+    || text.includes('invalid syntax')
+    || text.includes('eol while scanning')
+    || text.includes('unexpected eof while parsing')
+  );
+}
+
 router.post('/', auth, generateLimiter, async (req, res) => {
-  const { prompt, model = env.geminiModel, renderVideo = false } = req.body;
+  const { prompt, model = env.defaultModel, renderVideo = false } = req.body;
 
   if (!prompt) {
     return res.status(400).json({ error: 'Prompt is required' });
@@ -37,8 +48,23 @@ router.post('/', auth, generateLimiter, async (req, res) => {
       generation.status = 'rendering';
       await generation.save();
 
-      const { videoUrl } = await renderManim(manimCode);
-      generation.videoUrl = videoUrl;
+      try {
+        const { videoUrl } = await renderManim(manimCode);
+        generation.videoUrl = videoUrl;
+      } catch (renderError) {
+        if (!isSyntaxLikeRenderError(renderError?.message)) {
+          throw renderError;
+        }
+
+        const repairedCode = await repairManimCode(manimCode, renderError.message, model);
+        generation.manimCode = repairedCode;
+        generation.status = 'rendering';
+        await generation.save();
+
+        const retry = await renderManim(repairedCode);
+        generation.videoUrl = retry.videoUrl;
+      }
+
       generation.status = 'completed';
       await generation.save();
     } else {
