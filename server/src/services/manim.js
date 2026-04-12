@@ -1,10 +1,12 @@
 import { execFile } from 'child_process';
-import { writeFile, mkdir, readdir, unlink, rmdir } from 'fs/promises';
-import { join } from 'path';
+import { writeFile, mkdir, readdir } from 'fs/promises';
+import { dirname, join, resolve } from 'path';
+import { fileURLToPath } from 'url';
 import { v4 as uuidv4 } from 'uuid';
 
 const TIMEOUT_MS = 120_000;
-const UPLOADS_DIR = join(process.cwd(), 'uploads', 'videos');
+const SERVER_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
+const UPLOADS_DIR = join(SERVER_ROOT, 'uploads', 'videos');
 
 export async function renderManim(manimCode) {
   const jobId = uuidv4();
@@ -29,7 +31,7 @@ export async function renderManim(manimCode) {
       'GeneratedScene',
     ];
 
-    const child = execFile('docker', args, {
+    execFile('docker', args, {
       timeout: TIMEOUT_MS,
       maxBuffer: 5 * 1024 * 1024,
     }, async (error, stdout, stderr) => {

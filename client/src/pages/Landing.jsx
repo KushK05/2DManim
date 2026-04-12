@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './landing.css';
-
+  
 const CORE_FEATURES = [
   {
     title: 'PROMPT TO MOTION',
