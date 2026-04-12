@@ -15,6 +15,13 @@ import { useAuth } from '../context/AuthContext';
 import { billingAPI } from '../api/endpoints';
 import toast from 'react-hot-toast';
 
+const MARKETING_NAV_ITEMS = [
+  { label: 'Features', section: 'core' },
+  { label: 'Pricing', path: '/pricing' },
+  { label: 'Showcase', section: 'workflow' },
+  { label: 'Docs', section: 'workflow' },
+];
+
 const FALLBACK_PLANS = [
   {
     key: 'free',
@@ -90,6 +97,17 @@ export default function Pricing() {
   const success = searchParams.get('success');
   const canceled = searchParams.get('canceled');
   const localMode = searchParams.get('local') === '1';
+
+  const handleMarketingNav = (item) => {
+    if (item.path) {
+      navigate(item.path);
+      return;
+    }
+
+    navigate('/', {
+      state: { scrollTarget: item.section },
+    });
+  };
 
   useEffect(() => {
     let mounted = true;
@@ -222,14 +240,15 @@ export default function Pricing() {
               </Typography>
             </Box>
             <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 3 }}>
-              {['Features', 'Pricing', 'Showcase', 'Docs'].map((item) => (
+              {MARKETING_NAV_ITEMS.map((item) => (
                 <Typography
-                  key={item}
+                  key={item.label}
                   variant="body2"
+                  onClick={() => handleMarketingNav(item)}
                   sx={{
                     cursor: 'pointer',
-                    color: item === 'Pricing' ? 'text.primary' : 'text.secondary',
-                    fontWeight: item === 'Pricing' ? 600 : 400,
+                    color: item.label === 'Pricing' ? 'text.primary' : 'text.secondary',
+                    fontWeight: item.label === 'Pricing' ? 600 : 400,
                     fontSize: '0.64rem',
                     letterSpacing: '0.08em',
                     textTransform: 'uppercase',
@@ -237,7 +256,7 @@ export default function Pricing() {
                     transition: 'color 200ms',
                   }}
                 >
-                  {item}
+                  {item.label}
                 </Typography>
               ))}
             </Box>
@@ -680,6 +699,7 @@ export default function Pricing() {
               </Button>
               <Button
                 variant="outlined"
+                onClick={() => handleMarketingNav({ section: 'workflow' })}
                 sx={{
                   px: 4,
                   py: 1.5,
