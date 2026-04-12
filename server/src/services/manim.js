@@ -24,7 +24,6 @@ export async function renderManim(manimCode) {
       '-v', `${tempDir}/output:/manim/media`,
       '-w', '/manim',
       '2dmanim-manim',
-      'render',
       '-ql',
       'input/scene.py',
       'GeneratedScene',
