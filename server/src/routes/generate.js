@@ -3,6 +3,7 @@ import auth from '../middleware/auth.js';
 import { generateLimiter } from '../middleware/rateLimit.js';
 import { generateManimCode, repairManimCode } from '../services/gemini.js';
 import { renderManim } from '../services/manim.js';
+import { formatAppError } from '../services/errorFormatter.js';
 import Generation from '../models/Generation.js';
 import env from '../config/env.js';
 
@@ -23,11 +24,21 @@ router.post('/', auth, generateLimiter, async (req, res) => {
   const { prompt, model = env.defaultModel, renderVideo = false } = req.body;
 
   if (!prompt) {
-    return res.status(400).json({ error: 'Prompt is required' });
+    const formatted = formatAppError(new Error('Prompt is required'), {
+      phase: 'generate',
+      model,
+      renderVideo,
+    });
+    return res.status(formatted.status).json(formatted);
   }
 
   if (prompt.length > 2000) {
-    return res.status(400).json({ error: 'Prompt too long (max 2000 characters)' });
+    const formatted = formatAppError(new Error('Prompt too long (max 2000 characters)'), {
+      phase: 'generate',
+      model,
+      renderVideo,
+    });
+    return res.status(formatted.status).json(formatted);
   }
 
   const generation = await Generation.create({
@@ -77,10 +88,20 @@ router.post('/', auth, generateLimiter, async (req, res) => {
       renderSkipped: Boolean(renderVideo) && !env.enableLocalRender,
     });
   } catch (error) {
+    const formatted = formatAppError(error, {
+      phase: generation?.status === 'rendering' ? 'render' : 'generate',
+      model,
+      renderVideo,
+    });
+
     generation.status = 'failed';
-    generation.error = error.message;
+    generation.error = formatted.error;
     await generation.save();
-    res.status(500).json({ error: error.message, generation });
+    res.status(formatted.status).json({
+      error: formatted.error,
+      errorDetails: formatted.errorDetails,
+      generation,
+    });
   }
 });
 

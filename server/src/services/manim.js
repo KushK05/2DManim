@@ -1,6 +1,7 @@
 import { execFile } from 'child_process';
 import { writeFile, mkdir, readdir } from 'fs/promises';
 import { dirname, join, resolve } from 'path';
+import { tmpdir } from 'os';
 import { fileURLToPath } from 'url';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -10,7 +11,7 @@ const UPLOADS_DIR = join(SERVER_ROOT, 'uploads', 'videos');
 
 export async function renderManim(manimCode) {
   const jobId = uuidv4();
-  const tempDir = join('/tmp', `manim-${jobId}`);
+  const tempDir = join(tmpdir(), `manim-${jobId}`);
   await mkdir(tempDir, { recursive: true });
 
   const scriptPath = join(tempDir, 'scene.py');

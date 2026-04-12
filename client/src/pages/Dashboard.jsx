@@ -27,6 +27,46 @@ import CodeViewer from '../components/CodeViewer';
 import { generateAPI, modelsAPI } from '../api/endpoints';
 import { useAuth } from '../context/AuthContext';
 
+function summarizeGenerationError(rawMessage) {
+  const message = String(rawMessage || '').trim();
+  const lower = message.toLowerCase();
+
+  if (!message) {
+    return 'Generation failed. Please try again.';
+  }
+
+  if (lower.includes('quota exceeded') || lower.includes('current quota')) {
+    return 'API quota exceeded. Please check your billing or try again later.';
+  }
+
+  if (lower.includes('api key') && lower.includes('not set')) {
+    return 'API key missing. Add a valid provider key in your env file.';
+  }
+
+  if (lower.includes('api key') && (lower.includes('invalid') || lower.includes('expired'))) {
+    return 'API key is invalid or expired. Update it and try again.';
+  }
+
+  if (lower.includes('not found for api version') || lower.includes('call listmodels')) {
+    return 'The selected model is not available right now. Try a different model.';
+  }
+
+  if (lower.includes('rate limit')) {
+    return 'Rate limit reached. Wait a moment and try again.';
+  }
+
+  if (lower.includes('failed to fetch') || lower.includes('network')) {
+    return 'Network error while contacting the AI provider. Please try again.';
+  }
+
+  if (lower.includes('generation failed')) {
+    return 'Generation failed. Please try a different model or prompt.';
+  }
+
+  const firstSentence = message.split(/[.!?]\s/)[0]?.trim() || message;
+  return firstSentence.length > 140 ? `${firstSentence.slice(0, 137)}...` : firstSentence;
+}
+
 const EXAMPLE_PROMPTS = [
   'Animate a tangent line moving across a parabola while the slope updates live.',
   'Explain matrix multiplication with transforming colored vectors on a grid.',
@@ -43,6 +83,12 @@ export default function Dashboard() {
   const [error, setError] = useState('');
   const [status, setStatus] = useState('');
   const { user, refreshUser } = useAuth();
+  const trimmedPrompt = prompt.trim();
+  const promptSuggestion = EXAMPLE_PROMPTS.find((example) => (
+    !trimmedPrompt
+      ? example === EXAMPLE_PROMPTS[0]
+      : example.toLowerCase().startsWith(trimmedPrompt.toLowerCase()) && example !== trimmedPrompt
+  )) || '';
 
   useEffect(() => {
     let mounted = true;
@@ -89,11 +135,19 @@ export default function Dashboard() {
       refreshUser();
     } catch (err) {
       const msg = err.response?.data?.error || 'Generation failed';
-      setError(msg);
-      toast.error(msg);
+      const summary = summarizeGenerationError(msg);
+      setError(summary);
+      toast.error(summary);
     } finally {
       setLoading(false);
       setStatus('');
+    }
+  };
+
+  const handlePromptKeyDown = (event) => {
+    if (event.key === 'Tab' && promptSuggestion) {
+      event.preventDefault();
+      setPrompt(promptSuggestion);
     }
   };
 
@@ -208,8 +262,58 @@ export default function Dashboard() {
                 placeholder="Show the Pythagorean theorem with a right triangle, animated squares on each side, and a final area equality reveal."
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
+                onKeyDown={handlePromptKeyDown}
                 inputProps={{ maxLength: 2000 }}
+                helperText={promptSuggestion
+                  ? `Press Tab to accept the suggestion: ${promptSuggestion}`
+                  : 'Write your own prompt, or choose an example chip above to fill the editor.'}
               />
+
+              {promptSuggestion && (
+                <Box
+                  sx={{
+                    mt: 1.5,
+                    px: 1.75,
+                    py: 1.25,
+                    borderRadius: 2,
+                    border: '1px dashed rgba(255,255,255,0.14)',
+                    bgcolor: 'rgba(255,255,255,0.03)',
+                    display: 'flex',
+                    alignItems: { xs: 'flex-start', sm: 'center' },
+                    justifyContent: 'space-between',
+                    gap: 1.5,
+                    flexDirection: { xs: 'column', sm: 'row' },
+                  }}
+                >
+                  <Box>
+                    <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5 }}>
+                      Suggested completion
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Press{' '}
+                      <Box
+                        component="span"
+                        sx={{
+                          px: 0.75,
+                          py: 0.15,
+                          borderRadius: 1,
+                          bgcolor: 'rgba(255,255,255,0.08)',
+                          fontFamily: '"IBM Plex Mono", monospace',
+                          color: 'text.primary',
+                        }}
+                      >
+                        Tab
+                      </Box>{' '}
+                      to fill the prompt with the suggested text.
+                    </Typography>
+                  </Box>
+                  <Chip
+                    label="Use suggestion"
+                    clickable
+                    onClick={() => setPrompt(promptSuggestion)}
+                  />
+                </Box>
+              )}
 
               <Box
                 sx={{

@@ -1,4 +1,5 @@
-import { Link } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './landing.css';
   
@@ -34,6 +35,21 @@ const STEPS = [
 
 export default function Landing() {
   const { user } = useAuth();
+  const location = useLocation();
+
+  useEffect(() => {
+    const scrollTarget = location.state?.scrollTarget || location.hash.replace('#', '');
+
+    if (!scrollTarget) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
+    const target = document.getElementById(scrollTarget);
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [location.hash, location.state]);
 
   return (
     <div className="landing-page">
@@ -44,10 +60,10 @@ export default function Landing() {
             <span>2DManim</span>
           </Link>
           <nav className="landing-nav">
-            <a href="#core">Features</a>
+            <Link to="/#core">Features</Link>
             <Link to="/pricing">Pricing</Link>
-            <a href="#workflow">Showcase</a>
-            <a href="#workflow">Docs</a>
+            <Link to="/#workflow">Showcase</Link>
+            <Link to="/#workflow">Docs</Link>
           </nav>
           <Link to={user ? '/studio' : '/login'} className="landing-secondary-btn">
             Login
@@ -73,7 +89,7 @@ export default function Landing() {
         </p>
         <div className="landing-hero-actions">
           <Link to={user ? '/studio' : '/register'} className="landing-primary-btn">START CREATING NOW</Link>
-          <Link to="/pricing" className="landing-secondary-btn">View Showcase</Link>
+          <Link to="/#workflow" className="landing-secondary-btn">View Showcase</Link>
         </div>
       </section>
 
@@ -133,10 +149,10 @@ export default function Landing() {
         <div className="landing-container">
           <span>© 2026 2DManim</span>
           <div className="landing-footer-nav">
-            <a href="#workflow">PRODUCT</a>
-            <a href="#workflow">SUPPORT</a>
-            <a href="#workflow">COMPANY</a>
-            <a href="#workflow">LEGAL</a>
+            <Link to="/#workflow">PRODUCT</Link>
+            <Link to="/#workflow">SUPPORT</Link>
+            <Link to="/#workflow">COMPANY</Link>
+            <Link to="/#workflow">LEGAL</Link>
           </div>
         </div>
       </footer>
