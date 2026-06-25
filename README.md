@@ -1,161 +1,88 @@
 # 2DManim
 
-Local-first project for generating Manim code and optionally rendering videos with a local Docker Manim image.
+2DManim is now a TypeScript Next.js application for creating AI-powered Manim animation jobs from natural language prompts.
 
-Recommended local workflow is:
+The current implementation follows the MVP contracts in `SYSTEM_DESIGN.md`:
 
-- run `server` and `client` with npm in dev mode
-- use Docker only for `mongodb` (optional) and `manim-runner` image build
+- Next.js app router for UI and API routes
+- local token auth
+- chat/message/job/video records
+- `POST /api/generations` creates a queued generation job and returns quickly
+- `GET /api/jobs/:id` polls job progress and returns generated Manim code
+- local JSON persistence in `client/.data/db.json` for development
+
+The production design still expects Postgres, Redis/BullMQ, workers, Dockerized Manim rendering, and S3/CDN delivery. The current local storage and deterministic job progression are intentionally shaped so those pieces can replace the local adapter later without rewriting the UI.
 
 ## Stack
 
-- Client: React + Vite
-- Server: Node.js + Express + Mongoose
-- Database: MongoDB (local instance)
-- Renderer: Docker image `2dmanim-manim` (Manim + ffmpeg)
+- App: Next.js 14 + React + TypeScript
+- UI: Material UI
+- Local auth: HMAC-signed bearer tokens
+- Local persistence: `client/.data/db.json`
+- Future infrastructure: Postgres, Redis/BullMQ, worker service, Docker Manim renderer, S3-compatible storage
 
-## Local Architecture
+## Local Development
 
-- API runs on `http://localhost:5001`
-- Client dev server runs on `http://localhost:5173`
-- MongoDB runs on `127.0.0.1:27017`
-- Generated videos are served from `/api/videos/*` and stored in `server/uploads/videos`
-
-## Prerequisites
-
-- Node.js `20+`
-- npm
-- MongoDB running locally (or via Docker)
-- Docker Desktop running (required for video rendering)
-- `mongosh` (recommended for local DB verification)
-
-## 1) Install Dependencies
-
-```bash
-cd server && npm install
-cd ../client && npm install
-cd ..
-```
-
-## 2) Configure Environment
-
-Copy env file:
-
-```bash
-cp .env.example .env
-cp .env server/.env
-```
-
-Important defaults in `.env.example`:
-
-- `PORT=5001`
-- `MONGODB_URI=mongodb://127.0.0.1:27017/2dmanim?...`
-- `ENABLE_LOCAL_RENDER=true`
-- test user placeholders:
-  - `TEST_USER_EMAIL=testuser@2dmanim.local`
-  - `TEST_USER_PASSWORD=TestUser@123`
-
-Set these before real usage:
-
-- `JWT_SECRET`
-- `JWT_REFRESH_SECRET`
-- `GEMINI_API_KEY`
-
-## 3) Start MongoDB
-
-If you already run Mongo locally, just verify:
-
-```bash
-mongosh "mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.8.2" --quiet --eval "db.adminCommand({ ping: 1 })"
-```
-
-If not running locally, use Docker:
-
-```bash
-docker compose up -d mongodb
-```
-
-## 4) Build Local Manim Image (Required for video output)
-
-```bash
-docker compose build manim-runner
-```
-
-This builds the image `2dmanim-manim` used by the server render pipeline.
-
-## 5) Start Backend
-
-```bash
-cd server
-npm run dev
-```
-
-Health check:
-
-```bash
-curl -s http://localhost:5001/api/health
-```
-
-## 6) Create Test User
-
-With backend running:
-
-```bash
-curl -X POST http://localhost:5001/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{"name":"Test User","email":"testuser@2dmanim.local","password":"TestUser@123"}'
-```
-
-If user already exists, you will get an `Email already registered` response.
-
-## 7) Start Frontend
+Install dependencies:
 
 ```bash
 cd client
+npm install
+```
+
+Start the app:
+
+```bash
 npm run dev
 ```
 
-Open `http://localhost:5173`.
+Open:
 
-## 8) Verify Video Rendering
-
-Video rendering requires:
-
-- Docker Desktop is running
-- `ENABLE_LOCAL_RENDER=true` in `.env`/`server/.env`
-- `2dmanim-manim` image exists
-
-Rendered files are written to:
-
-- `server/uploads/videos`
-
-## Useful Checks
-
-Verify DB + collections + seeded user:
-
-```bash
-mongosh "mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.8.2" --quiet --eval 'const d=db.getSiblingDB("2dmanim"); printjson({collections:d.getCollectionNames(), userCount:d.users.countDocuments({email:"testuser@2dmanim.local"})});'
+```text
+http://localhost:3000
 ```
 
-Check renderer image:
+Build check:
 
 ```bash
-docker images | rg 2dmanim-manim
+npm run build
 ```
 
-## Troubleshooting
+## Environment
 
-- `Cannot connect to Docker daemon`
-  - Start Docker Desktop and retry `docker compose build manim-runner`.
+Copy the example file if needed:
 
-- `No video output produced`
-  - Ensure `2dmanim-manim` exists and was built successfully.
-  - Ensure Docker is running when you hit generate with video rendering enabled.
+```bash
+cp .env.example .env
+```
 
-- `EADDRINUSE` on backend startup
-  - Port `5000` may be occupied on macOS by ControlCenter/AirTunes.
-  - This project uses `PORT=5001` by default.
+Important local variables:
 
-- Mongo connection errors
-  - Confirm Mongo is reachable at `127.0.0.1:27017`.
-  - Re-run the ping command from section 3.
+- `AUTH_SECRET`
+- `GEMINI_API_KEY`
+- `GEMINI_MODEL`
+- `MISTRAL_API_KEY`
+- `MISTRAL_MODEL`
+
+Future production variables are also listed in `.env.example`:
+
+- `DATABASE_URL`
+- `REDIS_URL`
+- `S3_BUCKET`
+- `S3_REGION`
+- `S3_ENDPOINT`
+- `CDN_BASE_URL`
+
+## Docker
+
+The app container now serves Next.js on port `3000`:
+
+```bash
+docker compose up --build client
+```
+
+Local development data is mounted at:
+
+```text
+client/.data
+```

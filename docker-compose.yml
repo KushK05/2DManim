@@ -33,9 +33,10 @@ services:
     build: ./client
     container_name: 2dmanim-client
     ports:
-      - "5173:80"
-    depends_on:
-      - server
+      - "3000:3000"
+    env_file: .env
+    volumes:
+      - ./client/.data:/app/.data
 
 volumes:
   mongo-data:
