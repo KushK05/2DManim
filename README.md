@@ -9,7 +9,7 @@ The current implementation follows the MVP contracts in `SYSTEM_DESIGN.md`:
 - chat/message/job/video records
 - `POST /api/generations` creates a queued generation job and returns quickly
 - `GET /api/jobs/:id` polls job progress and returns generated Manim code
-- local JSON persistence in `client/.data/db.json` for development
+- local JSON persistence in `.data/db.json` for development
 
 The production design still expects Postgres, Redis/BullMQ, workers, Dockerized Manim rendering, and S3/CDN delivery. The current local storage and deterministic job progression are intentionally shaped so those pieces can replace the local adapter later without rewriting the UI.
 
@@ -18,7 +18,7 @@ The production design still expects Postgres, Redis/BullMQ, workers, Dockerized 
 - App: Next.js 14 + React + TypeScript
 - UI: Material UI
 - Local auth: HMAC-signed bearer tokens
-- Local persistence: `client/.data/db.json`
+- Local persistence: `.data/db.json`
 - Future infrastructure: Postgres, Redis/BullMQ, worker service, Docker Manim renderer, S3-compatible storage
 
 ## Local Development
@@ -26,7 +26,6 @@ The production design still expects Postgres, Redis/BullMQ, workers, Dockerized 
 Install dependencies:
 
 ```bash
-cd client
 npm install
 ```
 
@@ -78,11 +77,11 @@ Future production variables are also listed in `.env.example`:
 The app container now serves Next.js on port `3000`:
 
 ```bash
-docker compose up --build client
+docker compose up --build app
 ```
 
 Local development data is mounted at:
 
 ```text
-client/.data
+.data
 ```

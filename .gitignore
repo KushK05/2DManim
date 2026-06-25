@@ -1,28 +1,35 @@
 # Dependencies
 node_modules/
-client/node_modules/
-server/node_modules/
+
+# Next.js
+.next/
+out/
+dist/
+build/
+*.tsbuildinfo
 
 # Environment files
 .env
 .env.*
-client/.env
-client/.env.*
-server/.env
-server/.env.*
 !.env.example
-!client/.env.example
-!server/.env.example
 
-# Build outputs
-client/dist/
-server/dist/
+# Local app data and generated media
+.data/*
+!.data/.gitkeep
+uploads/
+tmp/
+temp/
+
+# Test and coverage outputs
 coverage/
 .nyc_output/
-*.tsbuildinfo
+playwright-report/
+test-results/
 
-# Generated assets
-server/uploads/
+# Deployment and tooling
+.vercel/
+.turbo/
+.cache/
 
 # Logs and runtime files
 *.log

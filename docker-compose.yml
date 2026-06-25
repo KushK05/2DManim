@@ -1,42 +1,9 @@
-version: '3.8'
-
 services:
-  mongodb:
-    image: mongo:7
-    container_name: 2dmanim-mongo
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongo-data:/data/db
-
-  manim-runner:
-    build:
-      context: ./server/docker
-      dockerfile: Dockerfile.manim
-    image: 2dmanim-manim
-    container_name: 2dmanim-manim-builder
-    entrypoint: ["echo", "Manim runner image built successfully"]
-
-  server:
-    build: ./server
-    container_name: 2dmanim-server
-    ports:
-      - "5001:5001"
-    env_file: .env
-    depends_on:
-      - mongodb
-    volumes:
-      - ./server/uploads:/app/uploads
-      - /var/run/docker.sock:/var/run/docker.sock
-
-  client:
-    build: ./client
-    container_name: 2dmanim-client
+  app:
+    build: .
+    container_name: 2dmanim-app
     ports:
       - "3000:3000"
     env_file: .env
     volumes:
-      - ./client/.data:/app/.data
-
-volumes:
-  mongo-data:
+      - ./.data:/app/.data
