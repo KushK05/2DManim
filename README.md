@@ -58,6 +58,7 @@ cp .env.example .env
 Important local variables:
 
 - `AUTH_SECRET`
+- `DATABASE_URL`
 - `GEMINI_API_KEY`
 - `GEMINI_MODEL`
 - `MISTRAL_API_KEY`
@@ -65,12 +66,43 @@ Important local variables:
 
 Future production variables are also listed in `.env.example`:
 
-- `DATABASE_URL`
 - `REDIS_URL`
 - `S3_BUCKET`
 - `S3_REGION`
 - `S3_ENDPOINT`
 - `CDN_BASE_URL`
+
+## Prisma
+
+The Prisma schema lives at:
+
+```text
+prisma/schema.prisma
+```
+
+Generate the Prisma client:
+
+```bash
+npm run db:generate
+```
+
+Validate the schema:
+
+```bash
+npm run db:validate
+```
+
+Apply the schema to a local Postgres database:
+
+```bash
+npm run db:push
+```
+
+Create a migration once the schema is ready to commit as a database change:
+
+```bash
+npm run db:migrate
+```
 
 ## Docker
 

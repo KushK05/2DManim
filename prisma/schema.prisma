@@ -1,0 +1,162 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Plan {
+  FREE
+  PRO
+  UNLIMITED
+}
+
+enum MessageRole {
+  USER
+  ASSISTANT
+  SYSTEM
+}
+
+enum GenerationJobStatus {
+  QUEUED
+  GENERATING_CODE
+  VALIDATING_CODE
+  RENDERING
+  UPLOADING
+  COMPLETED
+  FAILED_RETRYABLE
+  REQUEUED
+  FAILED_PERMANENT
+  DEAD_LETTER_QUEUE
+  CANCEL_REQUESTED
+  CANCELLED
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  image        String?
+  passwordHash String   @map("password_hash")
+  credits      Int      @default(5)
+  plan         Plan     @default(FREE)
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  chats          Chat[]
+  generationJobs GenerationJob[]
+  videos         Video[]
+
+  @@index([createdAt])
+  @@map("users")
+}
+
+model Chat {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  title     String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages       Message[]
+  generationJobs GenerationJob[]
+
+  @@index([userId, updatedAt])
+  @@map("chats")
+}
+
+model Message {
+  id        String      @id @default(cuid())
+  chatId    String      @map("chat_id")
+  role      MessageRole
+  content   String      @db.Text
+  createdAt DateTime    @default(now()) @map("created_at")
+  updatedAt DateTime    @updatedAt @map("updated_at")
+
+  chat               Chat               @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  promptForJob       GenerationJob?     @relation("PromptMessage")
+  assistantForJob    GenerationJob?     @relation("AssistantMessage")
+  statusHistoryItems JobStatusHistory[]
+
+  @@index([chatId, createdAt])
+  @@index([role])
+  @@map("messages")
+}
+
+model GenerationJob {
+  id                 String              @id @default(cuid())
+  userId             String              @map("user_id")
+  chatId             String              @map("chat_id")
+  messageId          String              @unique @map("message_id")
+  assistantMessageId String?             @unique @map("assistant_message_id")
+  status             GenerationJobStatus @default(QUEUED)
+  prompt             String              @db.Text
+  model              String
+  manimCode          String?             @map("manim_code") @db.Text
+  finalManimCode     String?             @map("final_manim_code") @db.Text
+  errorMessage       String?             @map("error_message") @db.Text
+  errorType          String?             @map("error_type")
+  retryCount         Int                 @default(0) @map("retry_count")
+  maxRetries         Int                 @default(3) @map("max_retries")
+  queueJobId         String?             @unique @map("queue_job_id")
+  workerId           String?             @map("worker_id")
+  heartbeatAt        DateTime?           @map("heartbeat_at")
+  startedAt          DateTime?           @map("started_at")
+  completedAt        DateTime?           @map("completed_at")
+  createdAt          DateTime            @default(now()) @map("created_at")
+  updatedAt          DateTime            @updatedAt @map("updated_at")
+
+  user             User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  chat             Chat               @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  message          Message            @relation("PromptMessage", fields: [messageId], references: [id], onDelete: Restrict)
+  assistantMessage Message?           @relation("AssistantMessage", fields: [assistantMessageId], references: [id], onDelete: SetNull)
+  video            Video?
+  statusHistory    JobStatusHistory[]
+
+  @@index([userId, createdAt])
+  @@index([chatId, createdAt])
+  @@index([status, createdAt])
+  @@index([status, heartbeatAt])
+  @@index([workerId])
+  @@map("generation_jobs")
+}
+
+model Video {
+  id         String   @id @default(cuid())
+  userId     String   @map("user_id")
+  jobId      String   @unique @map("job_id")
+  s3Key      String   @unique @map("s3_key")
+  cdnUrl     String?  @map("cdn_url")
+  fileSize   BigInt?  @map("file_size")
+  duration   Float?
+  format     String   @default("mp4")
+  resolution String?
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  user User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  job  GenerationJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@map("videos")
+}
+
+model JobStatusHistory {
+  id         String               @id @default(cuid())
+  jobId      String               @map("job_id")
+  messageId  String?              @map("message_id")
+  fromStatus GenerationJobStatus? @map("from_status")
+  toStatus   GenerationJobStatus  @map("to_status")
+  reason     String?              @db.Text
+  workerId   String?              @map("worker_id")
+  createdAt  DateTime             @default(now()) @map("created_at")
+
+  job     GenerationJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  message Message?      @relation(fields: [messageId], references: [id], onDelete: SetNull)
+
+  @@index([jobId, createdAt])
+  @@index([toStatus, createdAt])
+  @@map("job_status_history")
+}
