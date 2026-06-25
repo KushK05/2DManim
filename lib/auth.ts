@@ -1,13 +1,10 @@
 import crypto from 'crypto';
-import type { User } from './db';
 
 const TOKEN_TTL_MS = 1000 * 60 * 60 * 24 * 7;
 
 function secret() {
   return process.env.AUTH_SECRET || process.env.JWT_SECRET || 'local-2dmanim-dev-secret';
 }
-
-export type PublicUser = Omit<User, 'passwordHash'>;
 
 function base64url(input: string) {
   return Buffer.from(input).toString('base64url');
@@ -55,10 +52,4 @@ export function readToken(request: Request): { userId: string; expiresAt: number
   } catch {
     return null;
   }
-}
-
-export function publicUser(user: User | null): PublicUser | null {
-  if (!user) return null;
-  const { passwordHash, ...safeUser } = user;
-  return safeUser;
 }

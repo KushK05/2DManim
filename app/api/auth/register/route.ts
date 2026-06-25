@@ -1,6 +1,9 @@
-import { createToken, hashPassword, publicUser } from '@/lib/auth';
-import { id, mutateDb, nowIso, type User } from '@/lib/db';
+import { createToken, hashPassword } from '@/lib/auth';
 import { json } from '@/lib/http';
+import { prisma } from '@/lib/prisma';
+import { serializeUser } from '@/lib/serializers';
+
+export const runtime = 'nodejs';
 
 export async function POST(request: Request) {
   const body = await request.json().catch(() => ({}));
@@ -16,31 +19,25 @@ export async function POST(request: Request) {
     return json({ error: 'Password must be at least 6 characters' }, { status: 400 });
   }
 
-  const result = await mutateDb((db) => {
-    if (db.users.some((user) => user.email === email)) return null;
-
-    const user: User = {
-      id: id('user'),
-      email,
-      name,
-      image: null,
-      passwordHash: hashPassword(password),
-      credits: 5,
-      plan: 'free',
-      createdAt: nowIso(),
-      updatedAt: nowIso(),
-    };
-    db.users.push(user);
-    return user;
+  const existing = await prisma.user.findUnique({
+    where: { email },
   });
 
-  if (!result) {
+  if (existing) {
     return json({ error: 'Email already registered' }, { status: 400 });
   }
 
+  const user = await prisma.user.create({
+    data: {
+      email,
+      name,
+      passwordHash: hashPassword(password),
+    },
+  });
+
   return json({
-    user: publicUser(result),
-    accessToken: createToken(result.id),
-    refreshToken: createToken(result.id),
+    user: serializeUser(user),
+    accessToken: createToken(user.id),
+    refreshToken: createToken(user.id),
   }, { status: 201 });
 }

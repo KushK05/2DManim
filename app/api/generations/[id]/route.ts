@@ -1,16 +1,24 @@
-import { readDb } from '@/lib/db';
 import { json, requireUser } from '@/lib/http';
-import { refreshJob, toGeneration } from '@/lib/jobs';
+import { prisma } from '@/lib/prisma';
+import { serializeGeneration } from '@/lib/serializers';
+
+export const runtime = 'nodejs';
 
 export async function GET(request: Request, { params }: { params: { id: string } }) {
   const auth = await requireUser(request);
   if ('error' in auth) return auth.error;
 
-  const job = await refreshJob(params.id);
-  if (!job || job.userId !== auth.user.id) {
+  const job = await prisma.generationJob.findFirst({
+    where: {
+      id: params.id,
+      userId: auth.user.id,
+    },
+    include: { video: true },
+  });
+
+  if (!job) {
     return json({ error: 'Generation not found' }, { status: 404 });
   }
 
-  const db = await readDb();
-  return json({ generation: toGeneration(job, db) });
+  return json({ generation: serializeGeneration(job) });
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Container,
   Box,
@@ -42,7 +42,7 @@ type Model = {
   provider?: string;
 };
 
-const terminalStatuses = new Set(['COMPLETED', 'FAILED_PERMANENT', 'CANCELLED']);
+const terminalStatuses = new Set(['COMPLETED', 'FAILED_PERMANENT', 'DEAD_LETTER_QUEUE', 'CANCELLED']);
 
 export default function StudioPage() {
   const router = useRouter();
@@ -55,6 +55,7 @@ export default function StudioPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [error, setError] = useState('');
   const [status, setStatus] = useState('');
+  const pollTimeoutRef = useRef<number | null>(null);
   const { user, loading: authLoading } = useAuth();
 
   const trimmedPrompt = prompt.trim();
@@ -69,6 +70,12 @@ export default function StudioPage() {
   useEffect(() => {
     if (!authLoading && !user) router.push('/login');
   }, [authLoading, router, user]);
+
+  useEffect(() => () => {
+    if (pollTimeoutRef.current) {
+      window.clearTimeout(pollTimeoutRef.current);
+    }
+  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -101,7 +108,7 @@ export default function StudioPage() {
     setStatus(`Job status: ${data.generation.status}`);
 
     if (!terminalStatuses.has(data.generation.status)) {
-      window.setTimeout(() => {
+      pollTimeoutRef.current = window.setTimeout(() => {
         pollJob(jobId).catch((err) => {
           setError(err instanceof Error ? err.message : 'Could not refresh job status');
           setLoading(false);
@@ -124,6 +131,10 @@ export default function StudioPage() {
     setResult(null);
     setMessages([]);
     setStatus('Creating queued generation job...');
+    if (pollTimeoutRef.current) {
+      window.clearTimeout(pollTimeoutRef.current);
+      pollTimeoutRef.current = null;
+    }
 
     try {
       const data = await apiFetch<{ jobId: string; status: string; assistantMessageId: string }>('/api/generations', {

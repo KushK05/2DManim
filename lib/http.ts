@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
-import { readDb } from './db';
-import { publicUser, readToken } from './auth';
+import { readToken } from './auth';
+import { prisma } from './prisma';
+import { serializeUser } from './serializers';
 
 export function json(data: unknown, init: ResponseInit = {}) {
   return NextResponse.json(data, init);
@@ -12,11 +13,15 @@ export async function requireUser(request: Request) {
     return { error: json({ error: 'Authentication required' }, { status: 401 }) };
   }
 
-  const db = await readDb();
-  const user = db.users.find((item) => item.id === token.userId);
+  const user = await prisma.user.findUnique({
+    where: {
+      id: token.userId,
+    },
+  });
+
   if (!user) {
     return { error: json({ error: 'User not found' }, { status: 401 }) };
   }
 
-  return { db, user, safeUser: publicUser(user) };
+  return { user, safeUser: serializeUser(user) };
 }

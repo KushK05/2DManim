@@ -37,6 +37,7 @@ type PaginationState = {
 const statusColor: Record<string, 'success' | 'error' | 'warning' | 'info' | 'default'> = {
   COMPLETED: 'success',
   FAILED_PERMANENT: 'error',
+  DEAD_LETTER_QUEUE: 'error',
   CANCELLED: 'error',
   QUEUED: 'warning',
   GENERATING_CODE: 'info',
@@ -44,6 +45,16 @@ const statusColor: Record<string, 'success' | 'error' | 'warning' | 'info' | 'de
   RENDERING: 'info',
   UPLOADING: 'info',
 };
+
+const activeStatuses = new Set([
+  'QUEUED',
+  'GENERATING_CODE',
+  'VALIDATING_CODE',
+  'RENDERING',
+  'UPLOADING',
+  'FAILED_RETRYABLE',
+  'REQUEUED',
+]);
 
 export default function HistoryPage() {
   const [generations, setGenerations] = useState<Generation[]>([]);
@@ -54,8 +65,8 @@ export default function HistoryPage() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
 
-  const fetchHistory = async (page = 1) => {
-    setLoading(true);
+  const fetchHistory = async (page = 1, options: { silent?: boolean } = {}) => {
+    if (!options.silent) setLoading(true);
     setError('');
     try {
       const data = await apiFetch<{ generations: Generation[]; pagination: PaginationState }>(`/api/generations?page=${page}&limit=10`);
@@ -64,7 +75,7 @@ export default function HistoryPage() {
     } catch {
       setError('Could not load generation history right now.');
     } finally {
-      setLoading(false);
+      if (!options.silent) setLoading(false);
     }
   };
 
@@ -75,6 +86,36 @@ export default function HistoryPage() {
   useEffect(() => {
     if (user) fetchHistory();
   }, [user]);
+
+  useEffect(() => {
+    if (!user || !generations.some((generation) => activeStatuses.has(generation.status))) return undefined;
+
+    const interval = window.setInterval(() => {
+      fetchHistory(pagination.page, { silent: true }).catch(() => {
+        setError('Could not refresh active generation status.');
+      });
+    }, 2500);
+
+    return () => window.clearInterval(interval);
+  }, [generations, pagination.page, user]);
+
+  useEffect(() => {
+    if (!selected || !activeStatuses.has(selected.status)) return undefined;
+
+    const interval = window.setInterval(async () => {
+      try {
+        const data = await apiFetch<{ generation: Generation }>(`/api/jobs/${selected.id}`);
+        setSelected(data.generation);
+        setGenerations((current) => current.map((generation) => (
+          generation.id === data.generation.id ? data.generation : generation
+        )));
+      } catch {
+        setError('Could not refresh selected generation status.');
+      }
+    }, 1500);
+
+    return () => window.clearInterval(interval);
+  }, [selected]);
 
   if (authLoading || !user) {
     return (

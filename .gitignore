@@ -17,6 +17,7 @@ build/
 .data/*
 !.data/.gitkeep
 uploads/
+public/generated/
 tmp/
 temp/
 
